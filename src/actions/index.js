@@ -10,19 +10,23 @@ const postsDispatcher = async dispatch => {
   });
 };
 
-export const fetchUser = id => dispatch => {
-  _fetchUser(id, dispatch);
+const _memoizedgetuser = _.memoize(id => {
+  return jsonPlaceHolder.get(`/users/${id}`);
+});
+
+const _memoizeduserdispatcher = _.memoize((resdata, dispatch) => {
+  dispatch({
+    type: "FETCH_USER",
+    payload: resdata
+  });
+});
+
+export const fetchUser = id => async dispatch => {
+  const response = await _memoizedgetuser(id);
+  console.log(response);
+  _memoizeduserdispatcher(response.data, dispatch);
 };
 
 export const fetchPosts = () => {
   return postsDispatcher;
 };
-
-const _fetchUser = _.memoize(async (id, dispatch) => {
-  const response = await jsonPlaceHolder.get(`/users/${id}`);
-  console.log(response);
-  dispatch({
-    type: "FETCH_USER",
-    payload: response.data
-  });
-});
